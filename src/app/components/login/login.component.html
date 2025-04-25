@@ -1,0 +1,15 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Welcome Back</h2>
+    <p>Please login to continue</p>
+
+    <button (click)="onLoginWithGoogle()" class="google-btn">
+      <img
+        src="https://www.svgrepo.com/show/475656/google-color.svg"
+        alt="Google"
+      />
+      Login with Google
+    </button>
+    <p class="error">{{ showError }}</p>
+  </div>
+</div>

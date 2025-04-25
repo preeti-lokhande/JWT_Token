@@ -1,0 +1,73 @@
+<div class="container">
+  <h2>Task Manager</h2>
+
+  <!-- Search Filter -->
+  <input
+    type="text"
+    [(ngModel)]="searchTerm"
+    (ngModelChange)="onSearchChange()"
+    placeholder="Search by title, description, or priority"
+    class="input"
+  />
+
+  <!-- Task Form -->
+  <form #taskForm="ngForm" (ngSubmit)="onSubmit()">
+    <input
+      type="text"
+      name="title"
+      [(ngModel)]="task.title"
+      placeholder="Task Title"
+      class="input"
+      required
+    />
+    <textarea
+      name="description"
+      [(ngModel)]="task.description"
+      placeholder="Description"
+      class="textarea"
+      required
+    ></textarea>
+    <input
+      type="date"
+      name="dueDate"
+      [(ngModel)]="task.dueDate"
+      class="input"
+      required
+    />
+    <select name="priority" [(ngModel)]="task.priority" class="select" required>
+      <option value="">Select Priority</option>
+      <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+    </select>
+
+    <button type="submit" class="btn btn-primary">
+      {{ isEditing ? "Update Task" : "Create Task" }}
+    </button>
+  </form>
+
+  <!-- Task List -->
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Due Date</th>
+        <th>Priority</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for(task of filteredTasks; track task.id; let i = $index) {
+      <tr>
+        <td>{{ task.title }}</td>
+        <td>{{ task.description }}</td>
+        <td>{{ task.dueDate }}</td>
+        <td>{{ task.priority }}</td>
+        <td>
+          <button class="btn btn-secondary" (click)="editTask(i)">Edit</button>
+          <button class="btn btn-danger" (click)="deleteTask(i)">Delete</button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
