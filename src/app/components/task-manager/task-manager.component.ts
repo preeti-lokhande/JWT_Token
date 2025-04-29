@@ -1,15 +1,20 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Task } from '../../model/task.model';
-import { FormsModule } from '@angular/forms';
-import { NgForOf } from '@angular/common';
 
 @Component({
   selector: 'app-task-manager',
-  imports: [FormsModule, NgForOf],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './task-manager.component.html',
   styleUrl: './task-manager.component.scss',
 })
-export class TaskManagerComponent {
+export class TaskManagerComponent implements OnInit {
   tasks: Task[] = [];
   filteredTasks: Task[] = [];
   task: Task = this.getEmptyTask();
@@ -17,16 +22,35 @@ export class TaskManagerComponent {
   editIndex: number | null = null;
   priorities: string[] = ['Low', 'Medium', 'High'];
   searchTerm: string = '';
+  taskForm!: FormGroup;
+
+  constructor(private fb: FormBuilder) {}
+
+  ngOnInit() {
+    this.applyFilter();
+    this.taskForm = this.fb.group({
+      title: ['', Validators.required],
+      description: ['', Validators.required],
+      dueDate: ['', Validators.required],
+      priority: ['', Validators.required],
+    });
+  }
 
   getEmptyTask(): Task {
     return { id: '', title: '', description: '', dueDate: '', priority: '' };
   }
 
   onSubmit() {
-    if (this.isEditing && this.editIndex !== null) {
-      this.tasks[this.editIndex] = { ...this.task };
+    if (this.taskForm.valid) {
+      if (this.isEditing && this.editIndex !== null) {
+        // update task logic
+        this.tasks[this.editIndex] = { ...this.task };
+      } else {
+        // create task logic
+        this.tasks.push({ ...this.task, id: Date.now().toString() });
+      }
     } else {
-      this.tasks.push({ ...this.task, id: Date.now().toString() });
+      this.taskForm.markAllAsTouched(); // show validation errors
     }
     this.applyFilter();
     this.resetForm();
@@ -67,7 +91,7 @@ export class TaskManagerComponent {
     this.applyFilter();
   }
 
-  ngOnInit() {
-    this.applyFilter();
+  trackByIndex(index: number): number {
+    return index;
   }
 }

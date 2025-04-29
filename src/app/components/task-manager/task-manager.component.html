@@ -4,42 +4,56 @@
   <!-- Search Filter -->
   <input
     type="text"
-    [(ngModel)]="searchTerm"
-    (ngModelChange)="onSearchChange()"
-    placeholder="Search by title, description, or priority"
-    class="input"
+    (input)="onSearchChange()"
+    placeholder="Search keyword..."
+    class="input w-50"
   />
 
   <!-- Task Form -->
-  <form #taskForm="ngForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
     <input
       type="text"
       name="title"
-      [(ngModel)]="task.title"
-      placeholder="Task Title"
+      formControlName="title"
+      placeholder="Title"
       class="input"
       required
     />
+    @if(taskForm.get('title')?.touched && taskForm.get('title')?.invalid) {
+    <div class="text-danger">Title is required</div>
+    }
     <textarea
       name="description"
-      [(ngModel)]="task.description"
+      formControlName="description"
       placeholder="Description"
       class="textarea"
       required
     ></textarea>
+    @if(taskForm.get('description')?.touched &&
+    taskForm.get('description')?.invalid) {
+    <div class="text-danger">Description is required</div>
+    }
     <input
+      formControlName="dueDate"
       type="date"
       name="dueDate"
-      [(ngModel)]="task.dueDate"
       class="input"
       required
     />
-    <select name="priority" [(ngModel)]="task.priority" class="select" required>
+    @if(taskForm.get('dueDate')?.touched && taskForm.get('dueDate')?.invalid) {
+    <div class="text-danger">Due Date is required</div>
+    }
+    <select formControlName="priority" name="priority" class="select" required>
       <option value="">Select Priority</option>
-      <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+      @for(p of priorities; track trackByIndex; let i = $index) {
+      <option [value]="p">{{ p }}</option>
+      }
     </select>
-
-    <button type="submit" class="btn btn-primary">
+    @if(taskForm.get('priority')?.touched && taskForm.get('priority')?.invalid)
+    {
+    <div class="text-danger">Priority is required</div>
+    }
+    <button type="submit" class="btn btn-primary" [disabled]="taskForm.invalid">
       {{ isEditing ? "Update Task" : "Create Task" }}
     </button>
   </form>
